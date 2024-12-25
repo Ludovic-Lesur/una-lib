@@ -108,7 +108,7 @@ typedef enum {
 
 /*******************************************************************/
 typedef union {
-    UNA_time_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_TIME_VALUE_SIZE_BITS;
         UNA_time_unit_t unit : UNA_TIME_UNIT_SIZE_BITS;
@@ -117,7 +117,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_temperature_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_TEMPERATURE_VALUE_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
@@ -126,7 +126,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_voltage_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_VOLTAGE_VALUE_SIZE_BITS;
         UNA_voltage_unit_t unit : UNA_VOLTAGE_UNIT_SIZE_BITS;
@@ -135,7 +135,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_current_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_CURRENT_VALUE_SIZE_BITS;
         UNA_current_unit_t unit : UNA_CURRENT_UNIT_SIZE_BITS;
@@ -144,7 +144,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_electrical_power_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_ELECTRICAL_POWER_VALUE_SIZE_BITS;
         UNA_electrical_power_unit_t unit : UNA_ELECTRICAL_POWER_UNIT_SIZE_BITS;
@@ -154,7 +154,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_electrical_energy_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_ELECTRICAL_ENERGY_VALUE_SIZE_BITS;
         UNA_electrical_energy_unit_t unit : UNA_ELECTRICAL_ENERGY_UNIT_SIZE_BITS;
@@ -164,7 +164,7 @@ typedef union {
 
 /*******************************************************************/
 typedef union {
-    UNA_power_factor_representation_t representation;
+    uint32_t representation;
     struct {
         unsigned value : UNA_POWER_FACTOR_VALUE_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
@@ -173,7 +173,7 @@ typedef union {
 
 /*** UNA global variables ***/
 
-#ifdef UNA_LIB_BOARD_NAME_ENABLE
+#ifdef UNA_LIB_USE_BOARD_NAME
 const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST] = { "LVRM", "BPSM", "DDRM", "UHFM", "GPSM", "SM", "DIM", "RRM", "DMM", "MPMCM", "R4S8CR" };
 #endif
 
@@ -194,10 +194,12 @@ void UNA_reset_node_list(UNA_node_list_t* node_list) {
 }
 
 /*******************************************************************/
-UNA_time_representation_t UNA_convert_seconds(uint32_t time_seconds) {
+uint32_t UNA_convert_seconds(int32_t time_seconds) {
     // Local variables.
     UNA_time_t una_time;
-    uint32_t value = time_seconds;
+    uint32_t value = 0;
+    // Negative values not supported.
+    MATH_abs(time_seconds, value, uint32_t);
     // Select unit.
     if (value < (0b1 << UNA_TIME_VALUE_SIZE_BITS)) {
         una_time.unit = UNA_TIME_UNIT_SECOND;
@@ -223,94 +225,98 @@ UNA_time_representation_t UNA_convert_seconds(uint32_t time_seconds) {
 }
 
 /*******************************************************************/
-uint32_t UNA_get_seconds(UNA_time_representation_t una_time) {
+int32_t UNA_get_seconds(uint32_t una_time) {
     // Local variables.
-    uint32_t time_seconds = 0;
+    int32_t time_seconds = 0;
+    uint32_t local_una_time = una_time;
     uint32_t value = 0;
-    UNA_time_representation_t local_una_time = una_time;
     UNA_time_unit_t unit = UNA_TIME_UNIT_SECOND;
     // Parse fields.
-    unit = ((UNA_time_t*) &local_una_time)->unit;
-    value = (uint32_t) ((UNA_time_t*) &local_una_time)->value;
+    unit = (((UNA_time_t*) &local_una_time)->unit);
+    value = (uint32_t) (((UNA_time_t*) &local_una_time)->value);
     // Compute seconds.
     switch (unit) {
     case UNA_TIME_UNIT_SECOND:
-        time_seconds = value;
+        time_seconds = (int32_t) value;
         break;
     case UNA_TIME_UNIT_MINUTE:
-        time_seconds = (UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (int32_t) (UNA_SECONDS_PER_MINUTE * value);
         break;
     case UNA_TIME_UNIT_HOUR:
-        time_seconds = (UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (int32_t) (UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
         break;
     default:
-        time_seconds = (UNA_HOURS_PER_DAY * UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (int32_t) (UNA_HOURS_PER_DAY * UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
         break;
     }
     return time_seconds;
 }
 
 /*******************************************************************/
-UNA_temperature_representation_t UNA_convert_degrees(int8_t temperature_degrees) {
+uint32_t UNA_convert_degrees(int32_t temperature_degrees) {
     // Local variables.
     uint32_t una_temperature = 0;
-    int32_t temp_degrees = (int32_t) temperature_degrees;
     // DINFox representation is equivalent to signed magnitude
-    MATH_integer_to_signed_magnitude(temp_degrees, UNA_TEMPERATURE_VALUE_SIZE_BITS, &una_temperature);
-    return ((UNA_temperature_representation_t) una_temperature);
+    MATH_integer_to_signed_magnitude(temperature_degrees, UNA_TEMPERATURE_VALUE_SIZE_BITS, &una_temperature);
+    return una_temperature;
 }
 
 /*******************************************************************/
-int8_t UNA_get_degrees(UNA_temperature_representation_t una_temperature) {
+int32_t UNA_get_degrees(uint32_t una_temperature) {
     // Local variables.
-    int8_t temperature_degrees = 0;
-    uint32_t value = 0;
-    UNA_temperature_representation_t local_una_temperature = una_temperature;
+    int32_t temperature_degrees = 0;
+    uint32_t local_una_temperature = una_temperature;
     UNA_sign_t sign = UNA_SIGN_POSITIVE;
+    uint32_t value = 0;
     // Parse fields.
-    sign = (uint32_t) (((UNA_temperature_t*) &local_una_temperature)->sign);
+    sign = (((UNA_temperature_t*) &local_una_temperature)->sign);
     value = (uint32_t) (((UNA_temperature_t*) &local_una_temperature)->value);
     // Check sign.
-    temperature_degrees = (sign == UNA_SIGN_POSITIVE) ? ((int8_t) value) : ((-1) * ((int8_t) value));
+    temperature_degrees = (sign == UNA_SIGN_POSITIVE) ? ((int32_t) value) : ((-1) * ((int32_t) value));
     return temperature_degrees;
 }
 
 /*******************************************************************/
-UNA_voltage_representation_t UNA_convert_mv(uint32_t voltage_mv) {
+uint32_t UNA_convert_mv(int32_t voltage_mv) {
     // Local variables.
     UNA_voltage_t una_voltage;
+    uint32_t value = 0;
+    // Negative values not supported.
+    MATH_abs(voltage_mv, value, uint32_t);
     // Select format.
     if (voltage_mv < (0b1 << UNA_VOLTAGE_VALUE_SIZE_BITS)) {
         una_voltage.unit = UNA_VOLTAGE_UNIT_MV;
-        una_voltage.value = voltage_mv;
+        una_voltage.value = value;
     }
     else {
         una_voltage.unit = UNA_VOLTAGE_UNIT_DV;
-        una_voltage.value = (voltage_mv / UNA_MV_PER_DV);
+        una_voltage.value = (value / UNA_MV_PER_DV);
     }
     return (una_voltage.representation);
 }
 
 /*******************************************************************/
-uint32_t UNA_get_mv(UNA_voltage_representation_t una_voltage) {
+int32_t UNA_get_mv(uint32_t una_voltage) {
     // Local variables.
-    uint32_t voltage_mv = 0;
+    int32_t voltage_mv = 0;
+    uint32_t local_una_voltage = una_voltage;
     uint32_t value = 0;
-    UNA_voltage_representation_t local_una_voltage = una_voltage;
     UNA_voltage_unit_t unit = UNA_VOLTAGE_UNIT_MV;
     // Parse fields.
-    unit = ((UNA_voltage_t*) &local_una_voltage)->unit;
-    value = (uint32_t) ((UNA_voltage_t*) &local_una_voltage)->value;
+    unit = (((UNA_voltage_t*) &local_una_voltage)->unit);
+    value = (uint32_t) (((UNA_voltage_t*) &local_una_voltage)->value);
     // Compute mV.
-    voltage_mv = (unit == UNA_VOLTAGE_UNIT_MV) ? (value) : (value * UNA_MV_PER_DV);
+    voltage_mv = (unit == UNA_VOLTAGE_UNIT_MV) ? ((int32_t) value) : ((UNA_MV_PER_DV * (int32_t) value));
     return voltage_mv;
 }
 
 /*******************************************************************/
-UNA_current_representation_t UNA_convert_ua(uint32_t current_ua) {
+uint32_t UNA_convert_ua(int32_t current_ua) {
     // Local variables.
     UNA_current_t una_current;
-    uint32_t value = current_ua;
+    uint32_t value = 0;
+    // Negative values not supported.
+    MATH_abs(current_ua, value, uint32_t);
     // Select unit.
     if (value < (0b1 << UNA_CURRENT_VALUE_SIZE_BITS)) {
         una_current.unit = UNA_CURRENT_UNIT_UA;
@@ -336,35 +342,35 @@ UNA_current_representation_t UNA_convert_ua(uint32_t current_ua) {
 }
 
 /*******************************************************************/
-uint32_t UNA_get_ua(UNA_current_representation_t una_current) {
+int32_t UNA_get_ua(uint32_t una_current) {
     // Local variables.
-    uint32_t current_ua = 0;
+    int32_t current_ua = 0;
+    uint32_t local_una_current = una_current;
     uint32_t value = 0;
-    UNA_current_representation_t local_una_current = una_current;
     UNA_current_unit_t unit = UNA_CURRENT_UNIT_UA;
     // Parse fields.
-    unit = ((UNA_current_t*) &local_una_current)->unit;
-    value = (uint32_t) ((UNA_current_t*) &local_una_current)->value;
+    unit = (((UNA_current_t*) &local_una_current)->unit);
+    value = (uint32_t) (((UNA_current_t*) &local_una_current)->value);
     // Compute seconds.
     switch (unit) {
     case UNA_CURRENT_UNIT_UA:
-        current_ua = value;
+        current_ua = (int32_t) value;
         break;
     case UNA_CURRENT_UNIT_DMA:
-        current_ua = (UNA_UA_PER_DMA * value);
+        current_ua = (int32_t) (UNA_UA_PER_DMA * value);
         break;
     case UNA_CURRENT_UNIT_MA:
-        current_ua = (UNA_UA_PER_DMA * UNA_DMA_PER_MA * value);
+        current_ua = (int32_t) (UNA_UA_PER_DMA * UNA_DMA_PER_MA * value);
         break;
     default:
-        current_ua = (UNA_UA_PER_DMA * UNA_DMA_PER_MA * UNA_MA_PER_DA * value);
+        current_ua = (int32_t) (UNA_UA_PER_DMA * UNA_DMA_PER_MA * UNA_MA_PER_DA * value);
         break;
     }
     return current_ua;
 }
 
 /*******************************************************************/
-UNA_electrical_power_representation_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva) {
+uint32_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva) {
     // Local variables.
     UNA_electrical_power_t una_electrical_power;
     uint32_t absolute_value = 0;
@@ -397,12 +403,12 @@ UNA_electrical_power_representation_t UNA_convert_mw_mva(int32_t electrical_powe
 }
 
 /*******************************************************************/
-int32_t UNA_get_mw_mva(UNA_electrical_power_representation_t una_electrical_power) {
+int32_t UNA_get_mw_mva(uint32_t una_electrical_power) {
     // Local variables.
     int32_t electrical_power_mw_mva = 0;
     int32_t absolute_value = 0;
     int32_t sign_multiplicator = 0;
-    UNA_electrical_power_representation_t local_una_electrical_power = una_electrical_power;
+    uint32_t local_una_electrical_power = una_electrical_power;
     UNA_electrical_power_unit_t unit = UNA_ELECTRICAL_POWER_UNIT_MW_MVA;
     UNA_sign_t sign = UNA_SIGN_POSITIVE;
     // Parse fields.
@@ -430,7 +436,7 @@ int32_t UNA_get_mw_mva(UNA_electrical_power_representation_t una_electrical_powe
 }
 
 /*******************************************************************/
-UNA_electrical_energy_representation_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah) {
+uint32_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah) {
     // Local variables.
     UNA_electrical_energy_t una_electrical_energy;
     uint32_t absolute_value = 0;
@@ -463,12 +469,12 @@ UNA_electrical_energy_representation_t UNA_convert_mwh_mvah(int32_t electrical_e
 }
 
 /*******************************************************************/
-int32_t UNA_get_mwh_mvah(UNA_electrical_energy_representation_t una_electrical_energy) {
+int32_t UNA_get_mwh_mvah(uint32_t una_electrical_energy) {
     // Local variables.
     int32_t electrical_energy_mwh_mvah = 0;
     int32_t absolute_value = 0;
     int32_t sign_multiplicator = 0;
-    UNA_electrical_energy_representation_t local_una_electrical_energy = una_electrical_energy;
+    uint32_t local_una_electrical_energy = una_electrical_energy;
     UNA_electrical_energy_unit_t unit = UNA_ELECTRICAL_ENERGY_UNIT_MWH_MVAH;
     UNA_sign_t sign = UNA_SIGN_POSITIVE;
     // Parse fields.
@@ -496,20 +502,20 @@ int32_t UNA_get_mwh_mvah(UNA_electrical_energy_representation_t una_electrical_e
 }
 
 /*******************************************************************/
-UNA_power_factor_representation_t UNA_convert_power_factor(int32_t power_factor) {
+uint32_t UNA_convert_power_factor(int32_t power_factor) {
     // Local variables.
     uint32_t una_power_factor = 0;
     // DINFox representation is equivalent to signed magnitude
     MATH_integer_to_signed_magnitude(power_factor, UNA_POWER_FACTOR_VALUE_SIZE_BITS, &una_power_factor);
-    return ((UNA_power_factor_representation_t) una_power_factor);
+    return ((uint32_t) una_power_factor);
 }
 
 /*******************************************************************/
-int32_t UNA_get_power_factor(UNA_power_factor_representation_t una_power_factor) {
+int32_t UNA_get_power_factor(uint32_t una_power_factor) {
     // Local variables.
     int32_t power_factor = 0;
     uint32_t value = 0;
-    UNA_power_factor_representation_t local_una_power_factor = una_power_factor;
+    uint32_t local_una_power_factor = una_power_factor;
     UNA_sign_t sign = UNA_SIGN_POSITIVE;
     // Parse fields.
     sign = (((UNA_power_factor_t*) &local_una_power_factor)->sign);
@@ -520,23 +526,23 @@ int32_t UNA_get_power_factor(UNA_power_factor_representation_t una_power_factor)
 }
 
 /*******************************************************************/
-UNA_rf_power_representation_t UNA_convert_dbm(int16_t rf_power_dbm) {
-    return ((UNA_rf_power_representation_t) (rf_power_dbm + UNA_RF_POWER_OFFSET));
+uint32_t UNA_convert_dbm(int32_t rf_power_dbm) {
+    return ((uint32_t) (rf_power_dbm + UNA_RF_POWER_OFFSET));
 }
 
 /*******************************************************************/
-int16_t UNA_get_dbm(UNA_rf_power_representation_t una_rf_power) {
-    return ((int16_t) (una_rf_power - UNA_RF_POWER_OFFSET));
+int32_t UNA_get_dbm(uint32_t una_rf_power) {
+    return ((int32_t) (una_rf_power - UNA_RF_POWER_OFFSET));
 }
 
 /*******************************************************************/
-UNA_year_representation_t UNA_convert_year(uint16_t year) {
-    return ((uint8_t) (year - UNA_YEAR_OFFSET));
+uint32_t UNA_convert_year(int32_t year) {
+    return ((uint32_t) (year - UNA_YEAR_OFFSET));
 }
 
 /*******************************************************************/
-uint16_t UNA_get_year(UNA_year_representation_t una_year) {
-    return ((uint16_t) (una_year + UNA_YEAR_OFFSET));
+int32_t UNA_get_year(uint32_t una_year) {
+    return ((int32_t) (una_year + UNA_YEAR_OFFSET));
 }
 
 #endif /* UNA_LIB_DISABLE */

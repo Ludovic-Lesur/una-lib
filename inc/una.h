@@ -24,7 +24,9 @@
 #define UNA_REGISTER_MASK_NONE              0
 #define UNA_REGISTER_MASK_ALL               MATH_U32_MASK
 
+#define UNA_VERSION_ERROR_VALUE             0xFF
 #define UNA_TIME_ERROR_VALUE                0xFF
+#define UNA_YEAR_ERROR_VALUE                0xFF
 #define UNA_TEMPERATURE_ERROR_VALUE         0x7F
 #define UNA_HUMIDITY_ERROR_VALUE            0xFF
 #define UNA_VOLTAGE_ERROR_VALUE             0xFFFF
@@ -38,6 +40,7 @@
 #define UNA_NODE_ADDRESS_RANGE_LVRM         8
 #define UNA_NODE_ADDRESS_RANGE_DDRM         8
 #define UNA_NODE_ADDRESS_RANGE_RRM          8
+#define UNA_NODE_ADDRESS_RANGE_R4S8CR       15
 
 /*** UNA structures ***/
 
@@ -80,7 +83,7 @@ typedef enum {
     UNA_NODE_ADDRESS_RRM_START,
     UNA_NODE_ADDRESS_RRM_END = (UNA_NODE_ADDRESS_RRM_START + UNA_NODE_ADDRESS_RANGE_RRM - 1),
     UNA_NODE_ADDRESS_R4S8CR_START = 0x70,
-    UNA_NODE_ADDRESS_R4S8CR_END = (UNA_NODE_ADDRESS_R4S8CR_START + 14),
+    UNA_NODE_ADDRESS_R4S8CR_END = (UNA_NODE_ADDRESS_R4S8CR_START + UNA_NODE_ADDRESS_RANGE_R4S8CR - 1),
     UNA_NODE_ADDRESS_LAST,
     UNA_NODE_ADDRESS_ERROR = 0xFF
 } UNA_node_address_t;
@@ -95,7 +98,7 @@ typedef struct {
 } UNA_node_t;
 
 /*!******************************************************************
- * \enum NODE_list_t
+ * \struct UNA_node_list_t
  * \brief Node list type.
  *******************************************************************/
 typedef struct {
@@ -193,62 +196,20 @@ typedef enum {
 } UNA_bit_representation_t;
 
 /*!******************************************************************
- * \type UNA_time_representation_t
- * \brief UNA time representation type.
+ * \fn UNA_convert_physical_data_t
+ * \brief Function to convert a physical to the corresponding UNA representation.
  *******************************************************************/
-typedef uint8_t UNA_time_representation_t;
+typedef uint32_t (*UNA_convert_physical_data_t)(int32_t physical_data);
 
 /*!******************************************************************
- * \type UNA_temperature_representation_t
- * \brief UNA temperature representation type.
+ * \fn UNA_convert_physical_data_t
+ * \brief Function to convert a UNA representation to the corresponding physical data.
  *******************************************************************/
-typedef uint8_t UNA_temperature_representation_t;
-
-/*!******************************************************************
- * \type UNA_voltage_representation_t
- * \brief UNA voltage representation type.
- *******************************************************************/
-typedef uint16_t UNA_voltage_representation_t;
-
-/*!******************************************************************
- * \type UNA_current_representation_t
- * \brief UNA current representation type.
- *******************************************************************/
-typedef uint16_t UNA_current_representation_t;
-
-/*!******************************************************************
- * \type UNA_electrical_power_representation_t
- * \brief UNA electrical power representation type.
- *******************************************************************/
-typedef uint16_t UNA_electrical_power_representation_t;
-
-/*!******************************************************************
- * \type UNA_electrical_energy_representation_t
- * \brief UNA electrical energy representation type.
- *******************************************************************/
-typedef uint16_t UNA_electrical_energy_representation_t;
-
-/*!******************************************************************
- * \type UNA_power_factor_representation_t
- * \brief UNA power factor representation type.
- *******************************************************************/
-typedef uint8_t UNA_power_factor_representation_t;
-
-/*!******************************************************************
- * \type UNA_rf_power_representation_t
- * \brief UNA RF power representation type.
- *******************************************************************/
-typedef uint8_t UNA_rf_power_representation_t;
-
-/*!******************************************************************
- * \type UNA_year_representation_t
- * \brief UNA year representation type.
- *******************************************************************/
-typedef uint8_t UNA_year_representation_t;
+typedef int32_t (*UNA_get_physical_data_t)(uint32_t una_representation);
 
 /*** UNA global variables ***/
 
-#ifdef UNA_LIB_BOARD_NAME_ENABLE
+#ifdef UNA_LIB_USE_BOARD_NAME
 extern const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST];
 #endif
 
@@ -264,166 +225,166 @@ extern const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST];
 void UNA_reset_node_list(UNA_node_list_t* node_list);
 
 /*!******************************************************************
- * \fn UNA_time_representation_t UNA_convert_seconds(uint32_t time_seconds)
+ * \fn uint32_t UNA_convert_seconds(int32_t time_seconds)
  * \brief Convert a time to UNA representation.
  * \param[in]   time_seconds: Value to convert
  * \param[out]  none
  * \retval      UNA representation.
  *******************************************************************/
-UNA_time_representation_t UNA_convert_seconds(uint32_t time_seconds);
+uint32_t UNA_convert_seconds(int32_t time_seconds);
 
 /*!******************************************************************
- * \fn uint32_t UNA_get_seconds(UNA_time_representation_t una_time)
+ * \fn int32_t UNA_get_seconds(uint32_t una_time)
  * \brief Convert a UNA representation to time.
  * \param[in]   una_time: UNA representation to convert.
  * \param[out]  none
  * \retval      Converted time value in seconds.
  *******************************************************************/
-uint32_t UNA_get_seconds(UNA_time_representation_t una_time);
+int32_t UNA_get_seconds(uint32_t una_time);
 
 /*!******************************************************************
- * \fn UNA_temperature_representation_t UNA_convert_degrees(int8_t temperature_degrees)
- * \brief Convert a temperature to UNA representation.
- * \param[in]   temperature_degrees: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_temperature_representation_t UNA_convert_degrees(int8_t temperature_degrees);
-
-/*!******************************************************************
- * \fn int8_t UNA_get_degrees(UNA_temperature_representation_t una_temperature)
- * \brief Convert a UNA representation to temperature.
- * \param[in]   una_temperature: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted temperature value in degrees.
- *******************************************************************/
-int8_t UNA_get_degrees(UNA_temperature_representation_t una_temperature);
-
-/*!******************************************************************
- * \fn UNA_voltage_representation_t UNA_convert_mv(uint32_t voltage_mv)
- * \brief Convert a voltage to UNA representation.
- * \param[in]   voltage_mv: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_voltage_representation_t UNA_convert_mv(uint32_t voltage_mv);
-
-/*!******************************************************************
- * \fn uint32_t UNA_get_mv(UNA_voltage_representation_t una_voltage)
- * \brief Convert a UNA representation to voltage.
- * \param[in]   una_voltage: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted voltage value in mV.
- *******************************************************************/
-uint32_t UNA_get_mv(UNA_voltage_representation_t una_voltage);
-
-/*!******************************************************************
- * \fn UNA_current_representation_t UNA_convert_ua(uint32_t current_ua)
- * \brief Convert a current to UNA representation.
- * \param[in]   voltage_mv: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_current_representation_t UNA_convert_ua(uint32_t current_ua);
-
-/*!******************************************************************
- * \fn uint32_t UNA_get_ua(UNA_current_representation_t una_current)
- * \brief Convert a UNA representation to current.
- * \param[in]   una_current: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted current value in uA.
- *******************************************************************/
-uint32_t UNA_get_ua(UNA_current_representation_t una_current);
-
-/*!******************************************************************
- * \fn UNA_electrical_power_representation_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva)
- * \brief Convert an electrical power to UNA representation.
- * \param[in]   electrical_power_mw_mva: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_electrical_power_representation_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva);
-
-/*!******************************************************************
- * \fn int32_t UNA_get_mw_mva(UNA_electrical_power_representation_t una_electrical_power)
- * \brief Convert a UNA representation to electrical power.
- * \param[in]   una_electrical_power: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted electrical power value in mW or mVA.
- *******************************************************************/
-int32_t UNA_get_mw_mva(UNA_electrical_power_representation_t una_electrical_power);
-
-/*!******************************************************************
- * \fn UNA_electrical_energy_representation_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah)
- * \brief Convert an electrical energy to UNA representation.
- * \param[in]   electrical_energy_mwh_mvah: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_electrical_energy_representation_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah);
-
-/*!******************************************************************
- * \fn int32_t UNA_get_mwh_mvah(UNA_electrical_energy_representation_t una_electrical_energy)
- * \brief Convert a UNA representation to electrical energy.
- * \param[in]   una_electrical_energy: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted electrical energy value in mWh or mVAh.
- *******************************************************************/
-int32_t UNA_get_mwh_mvah(UNA_electrical_energy_representation_t una_electrical_energy);
-
-/*!******************************************************************
- * \fn UNA_power_factor_representation_t UNA_convert_power_factor(int32_t power_factor)
- * \brief Convert an power factor to UNA representation.
- * \param[in]   power_factor: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_power_factor_representation_t UNA_convert_power_factor(int32_t power_factor);
-
-/*!******************************************************************
- * \fn int32_t UNA_get_power_factor(UNA_power_factor_representation_t una_power_factor)
- * \brief Convert a UNA representation to electrical power.
- * \param[in]   una_electrical_power: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted power factor.
- *******************************************************************/
-int32_t UNA_get_power_factor(UNA_power_factor_representation_t una_power_factor);
-
-/*!******************************************************************
- * \fn UNA_rf_power_representation_t UNA_convert_dbm(int16_t rf_power_dbm)
- * \brief Convert an RF power to UNA representation.
- * \param[in]   rf_power_dbm: Value to convert
- * \param[out]  none
- * \retval      UNA representation.
- *******************************************************************/
-UNA_rf_power_representation_t UNA_convert_dbm(int16_t rf_power_dbm);
-
-/*!******************************************************************
- * \fn int16_t UNA_get_dbm(UNA_rf_power_representation_t una_rf_power)
- * \brief Convert a UNA representation to current.
- * \param[in]   una_rf_power: UNA representation to convert.
- * \param[out]  none
- * \retval      Converted RF power value in dBm.
- *******************************************************************/
-int16_t UNA_get_dbm(UNA_rf_power_representation_t una_rf_power);
-
-/*!******************************************************************
- * \fn UNA_year_representation_t UNA_convert_year(uint16_t year)
+ * \fn uint32_t UNA_convert_year(int32_t year)
  * \brief Convert a year to UNA representation.
  * \param[in]   year: Value to convert
  * \param[out]  none
  * \retval      UNA representation.
  *******************************************************************/
-UNA_year_representation_t UNA_convert_year(uint16_t year);
+uint32_t UNA_convert_year(int32_t year);
 
 /*!******************************************************************
- * \fn uint16_t UNA_get_year(UNA_year_representation_t una_year)
+ * \fn int32_t UNA_get_year(uint32_t una_year)
  * \brief Convert a UNA representation to year.
  * \param[in]   una_year: UNA representation to convert.
  * \param[out]  none
  * \retval      Converted year value.
  *******************************************************************/
-uint16_t UNA_get_year(UNA_year_representation_t una_year);
+int32_t UNA_get_year(uint32_t una_year);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_degrees(int32_t temperature_degrees)
+ * \brief Convert a temperature to UNA representation.
+ * \param[in]   temperature_degrees: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_degrees(int32_t temperature_degrees);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_degrees(uint32_t una_temperature)
+ * \brief Convert a UNA representation to temperature.
+ * \param[in]   una_temperature: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted temperature value in degrees.
+ *******************************************************************/
+int32_t UNA_get_degrees(uint32_t una_temperature);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_mv(int32_t voltage_mv)
+ * \brief Convert a voltage to UNA representation.
+ * \param[in]   voltage_mv: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_mv(int32_t voltage_mv);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_mv(uint32_t una_voltage)
+ * \brief Convert a UNA representation to voltage.
+ * \param[in]   una_voltage: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted voltage value in mV.
+ *******************************************************************/
+int32_t UNA_get_mv(uint32_t una_voltage);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_ua(int32_t current_ua)
+ * \brief Convert a current to UNA representation.
+ * \param[in]   voltage_mv: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_ua(int32_t current_ua);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_ua(uint32_t una_current)
+ * \brief Convert a UNA representation to current.
+ * \param[in]   una_current: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted current value in uA.
+ *******************************************************************/
+int32_t UNA_get_ua(uint32_t una_current);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva)
+ * \brief Convert an electrical power to UNA representation.
+ * \param[in]   electrical_power_mw_mva: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_mw_mva(int32_t electrical_power_mw_mva);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_mw_mva(uint32_t una_electrical_power)
+ * \brief Convert a UNA representation to electrical power.
+ * \param[in]   una_electrical_power: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted electrical power value in mW or mVA.
+ *******************************************************************/
+int32_t UNA_get_mw_mva(uint32_t una_electrical_power);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah)
+ * \brief Convert an electrical energy to UNA representation.
+ * \param[in]   electrical_energy_mwh_mvah: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_mwh_mvah(int32_t electrical_energy_mwh_mvah);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_mwh_mvah(uint32_t una_electrical_energy)
+ * \brief Convert a UNA representation to electrical energy.
+ * \param[in]   una_electrical_energy: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted electrical energy value in mWh or mVAh.
+ *******************************************************************/
+int32_t UNA_get_mwh_mvah(uint32_t una_electrical_energy);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_power_factor(int32_t power_factor)
+ * \brief Convert an power factor to UNA representation.
+ * \param[in]   power_factor: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_power_factor(int32_t power_factor);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_power_factor(uint32_t una_power_factor)
+ * \brief Convert a UNA representation to electrical power.
+ * \param[in]   una_electrical_power: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted power factor.
+ *******************************************************************/
+int32_t UNA_get_power_factor(uint32_t una_power_factor);
+
+/*!******************************************************************
+ * \fn uint32_t UNA_convert_dbm(int32_t rf_power_dbm)
+ * \brief Convert an RF power to UNA representation.
+ * \param[in]   rf_power_dbm: Value to convert
+ * \param[out]  none
+ * \retval      UNA representation.
+ *******************************************************************/
+uint32_t UNA_convert_dbm(int32_t rf_power_dbm);
+
+/*!******************************************************************
+ * \fn int32_t UNA_get_dbm(uint32_t una_rf_power)
+ * \brief Convert a UNA representation to current.
+ * \param[in]   una_rf_power: UNA representation to convert.
+ * \param[out]  none
+ * \retval      Converted RF power value in dBm.
+ *******************************************************************/
+int32_t UNA_get_dbm(uint32_t una_rf_power);
 
 #endif /* UNA_LIB_DISABLE */
 
