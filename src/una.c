@@ -194,12 +194,10 @@ void UNA_reset_node_list(UNA_node_list_t* node_list) {
 }
 
 /*******************************************************************/
-uint32_t UNA_convert_seconds(int32_t time_seconds) {
+uint32_t UNA_convert_seconds(uint32_t time_seconds) {
     // Local variables.
     UNA_time_t una_time;
-    uint32_t value = 0;
-    // Negative values not supported.
-    MATH_abs(time_seconds, value, uint32_t);
+    uint32_t value = time_seconds;
     // Select unit.
     if (value < (0b1 << UNA_TIME_VALUE_SIZE_BITS)) {
         una_time.unit = UNA_TIME_UNIT_SECOND;
@@ -225,9 +223,9 @@ uint32_t UNA_convert_seconds(int32_t time_seconds) {
 }
 
 /*******************************************************************/
-int32_t UNA_get_seconds(uint32_t una_time) {
+uint32_t UNA_get_seconds(uint32_t una_time) {
     // Local variables.
-    int32_t time_seconds = 0;
+    uint32_t time_seconds = 0;
     uint32_t local_una_time = una_time;
     uint32_t value = 0;
     UNA_time_unit_t unit = UNA_TIME_UNIT_SECOND;
@@ -237,16 +235,16 @@ int32_t UNA_get_seconds(uint32_t una_time) {
     // Compute seconds.
     switch (unit) {
     case UNA_TIME_UNIT_SECOND:
-        time_seconds = (int32_t) value;
+        time_seconds = (uint32_t) value;
         break;
     case UNA_TIME_UNIT_MINUTE:
-        time_seconds = (int32_t) (UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (uint32_t) (UNA_SECONDS_PER_MINUTE * value);
         break;
     case UNA_TIME_UNIT_HOUR:
-        time_seconds = (int32_t) (UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (uint32_t) (UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
         break;
     default:
-        time_seconds = (int32_t) (UNA_HOURS_PER_DAY * UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
+        time_seconds = (uint32_t) (UNA_HOURS_PER_DAY * UNA_MINUTES_PER_HOUR * UNA_SECONDS_PER_MINUTE * value);
         break;
     }
     return time_seconds;

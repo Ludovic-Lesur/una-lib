@@ -225,22 +225,22 @@ extern const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST];
 void UNA_reset_node_list(UNA_node_list_t* node_list);
 
 /*!******************************************************************
- * \fn uint32_t UNA_convert_seconds(int32_t time_seconds)
+ * \fn uint32_t UNA_convert_seconds(uint32_t time_seconds)
  * \brief Convert a time to UNA representation.
  * \param[in]   time_seconds: Value to convert
  * \param[out]  none
  * \retval      UNA representation.
  *******************************************************************/
-uint32_t UNA_convert_seconds(int32_t time_seconds);
+uint32_t UNA_convert_seconds(uint32_t time_seconds);
 
 /*!******************************************************************
- * \fn int32_t UNA_get_seconds(uint32_t una_time)
+ * \fn uint32_t UNA_get_seconds(uint32_t una_time)
  * \brief Convert a UNA representation to time.
  * \param[in]   una_time: UNA representation to convert.
  * \param[out]  none
  * \retval      Converted time value in seconds.
  *******************************************************************/
-int32_t UNA_get_seconds(uint32_t una_time);
+uint32_t UNA_get_seconds(uint32_t una_time);
 
 /*!******************************************************************
  * \fn uint32_t UNA_convert_year(int32_t year)
