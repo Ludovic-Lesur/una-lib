@@ -10,7 +10,7 @@
 #ifndef UNA_LIB_DISABLE_FLAGS_FILE
 #include "una_lib_flags.h"
 #endif
-#include "math.h"
+#include "maths.h"
 #include "types.h"
 
 #ifndef UNA_LIB_DISABLE
