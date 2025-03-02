@@ -174,7 +174,7 @@ typedef union {
 /*** UNA global variables ***/
 
 #ifdef UNA_LIB_USE_BOARD_NAME
-const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST] = { "LVRM", "BPSM", "DDRM", "UHFM", "GPSM", "SM", "DIM", "RRM", "DMM", "MPMCM", "R4S8CR" };
+const char_t* const UNA_BOARD_NAME[UNA_BOARD_ID_LAST] = { "LVRM", "BPSM", "DDRM", "UHFM", "GPSM", "SM", "DIM", "RRM", "DMM", "MPMCM", "R4S8CR" };
 #endif
 
 /*** UNA functions ***/

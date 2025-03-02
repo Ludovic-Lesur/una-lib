@@ -210,7 +210,7 @@ typedef int32_t (*UNA_get_physical_data_t)(uint32_t una_representation);
 /*** UNA global variables ***/
 
 #ifdef UNA_LIB_USE_BOARD_NAME
-extern const char_t* UNA_BOARD_NAME[UNA_BOARD_ID_LAST];
+extern const char_t* const UNA_BOARD_NAME[UNA_BOARD_ID_LAST];
 #endif
 
 /*** UNA functions ***/
