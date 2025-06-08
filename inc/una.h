@@ -55,7 +55,7 @@ typedef enum {
     UNA_BOARD_ID_UHFM,
     UNA_BOARD_ID_GPSM,
     UNA_BOARD_ID_SM,
-    UNA_BOARD_ID_DIM,
+    UNA_BOARD_ID_RS485_BRIDGE,
     UNA_BOARD_ID_RRM,
     UNA_BOARD_ID_DMM,
     UNA_BOARD_ID_MPMCM,
@@ -71,7 +71,7 @@ typedef enum {
  *******************************************************************/
 typedef enum {
     UNA_NODE_ADDRESS_MASTER = 0x00,
-    UNA_NODE_ADDRESS_DIM,
+    UNA_NODE_ADDRESS_RS485_BRIDGE,
     UNA_NODE_ADDRESS_BPSM,
     UNA_NODE_ADDRESS_UHFM,
     UNA_NODE_ADDRESS_GPSM,
