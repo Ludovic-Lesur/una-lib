@@ -171,10 +171,11 @@ typedef struct {
  * \brief Node access status.
  *******************************************************************/
 typedef union {
+    uint8_t all;
     struct {
         UNA_access_type_t type :1;
         unsigned flags :7;
-    } __attribute__((scalar_storage_order("big-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("big-endian"))) __attribute__((packed));
     struct {
         UNA_access_type_t type_bis :1;
         unsigned unused :3;
@@ -182,8 +183,7 @@ typedef union {
         unsigned reply_timeout :1;
         unsigned parser_error :1;
         unsigned error_received :1;
-    } __attribute__((scalar_storage_order("big-endian")))__attribute__((packed));
-    uint8_t all;
+    } __attribute__((scalar_storage_order("big-endian"))) __attribute__((packed));
 } UNA_access_status_t;
 
 /*!******************************************************************

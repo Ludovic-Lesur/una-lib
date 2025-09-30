@@ -112,7 +112,7 @@ typedef union {
     struct {
         unsigned value : UNA_TIME_VALUE_SIZE_BITS;
         UNA_time_unit_t unit : UNA_TIME_UNIT_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_time_t;
 
 /*******************************************************************/
@@ -121,7 +121,7 @@ typedef union {
     struct {
         unsigned value : UNA_TEMPERATURE_VALUE_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_temperature_t;
 
 /*******************************************************************/
@@ -130,7 +130,7 @@ typedef union {
     struct {
         unsigned value : UNA_VOLTAGE_VALUE_SIZE_BITS;
         UNA_voltage_unit_t unit : UNA_VOLTAGE_UNIT_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_voltage_t;
 
 /*******************************************************************/
@@ -139,7 +139,7 @@ typedef union {
     struct {
         unsigned value : UNA_CURRENT_VALUE_SIZE_BITS;
         UNA_current_unit_t unit : UNA_CURRENT_UNIT_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_current_t;
 
 /*******************************************************************/
@@ -149,7 +149,7 @@ typedef union {
         unsigned value : UNA_ELECTRICAL_POWER_VALUE_SIZE_BITS;
         UNA_electrical_power_unit_t unit : UNA_ELECTRICAL_POWER_UNIT_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_electrical_power_t;
 
 /*******************************************************************/
@@ -159,7 +159,7 @@ typedef union {
         unsigned value : UNA_ELECTRICAL_ENERGY_VALUE_SIZE_BITS;
         UNA_electrical_energy_unit_t unit : UNA_ELECTRICAL_ENERGY_UNIT_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_electrical_energy_t;
 
 /*******************************************************************/
@@ -168,7 +168,7 @@ typedef union {
     struct {
         unsigned value : UNA_POWER_FACTOR_VALUE_SIZE_BITS;
         UNA_sign_t sign : UNA_SIGN_SIZE_BITS;
-    } __attribute__((scalar_storage_order("little-endian")))__attribute__((packed));
+    } __attribute__((scalar_storage_order("little-endian"))) __attribute__((packed));
 } UNA_power_factor_t;
 
 /*** UNA global variables ***/
