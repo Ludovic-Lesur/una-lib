@@ -22,7 +22,7 @@
 #define UNA_TIME_UNIT_SIZE_BITS                 2
 #define UNA_TIME_VALUE_SIZE_BITS                6
 
-#define UNA_TEMPERATURE_VALUE_SIZE_BITS         7
+#define UNA_TEMPERATURE_VALUE_SIZE_BITS         11
 
 #define UNA_VOLTAGE_UNIT_SIZE_BITS              1
 #define UNA_VOLTAGE_VALUE_SIZE_BITS             15
@@ -253,18 +253,28 @@ int32_t UNA_get_seconds(uint32_t una_time) {
 }
 
 /*******************************************************************/
-uint32_t UNA_convert_degrees(int32_t temperature_degrees) {
+uint32_t UNA_convert_year(int32_t year) {
+    return ((uint32_t) (year - UNA_YEAR_OFFSET));
+}
+
+/*******************************************************************/
+int32_t UNA_get_year(uint32_t una_year) {
+    return ((int32_t) (una_year + UNA_YEAR_OFFSET));
+}
+
+/*******************************************************************/
+uint32_t UNA_convert_tenth_degrees(int32_t temperature_tenth_degrees) {
     // Local variables.
     uint32_t una_temperature = 0;
-    // DINFox representation is equivalent to signed magnitude
-    MATH_integer_to_signed_magnitude(temperature_degrees, UNA_TEMPERATURE_VALUE_SIZE_BITS, &una_temperature);
+    // DINFox representation is equivalent to signed magnitude.
+    MATH_integer_to_signed_magnitude(temperature_tenth_degrees, UNA_TEMPERATURE_VALUE_SIZE_BITS, &una_temperature);
     return una_temperature;
 }
 
 /*******************************************************************/
-int32_t UNA_get_degrees(uint32_t una_temperature) {
+int32_t UNA_get_tenth_degrees(uint32_t una_temperature) {
     // Local variables.
-    int32_t temperature_degrees = 0;
+    int32_t temperature_tenth_degrees = 0;
     uint32_t local_una_temperature = una_temperature;
     UNA_sign_t sign = UNA_SIGN_POSITIVE;
     uint32_t value = 0;
@@ -272,8 +282,8 @@ int32_t UNA_get_degrees(uint32_t una_temperature) {
     sign = (((UNA_temperature_t*) &local_una_temperature)->sign);
     value = (uint32_t) (((UNA_temperature_t*) &local_una_temperature)->value);
     // Check sign.
-    temperature_degrees = (sign == UNA_SIGN_POSITIVE) ? ((int32_t) value) : ((-1) * ((int32_t) value));
-    return temperature_degrees;
+    temperature_tenth_degrees = (sign == UNA_SIGN_POSITIVE) ? ((int32_t) value) : ((-1) * ((int32_t) value));
+    return temperature_tenth_degrees;
 }
 
 /*******************************************************************/
@@ -533,16 +543,6 @@ uint32_t UNA_convert_dbm(int32_t rf_power_dbm) {
 /*******************************************************************/
 int32_t UNA_get_dbm(uint32_t una_rf_power) {
     return ((int32_t) (una_rf_power - UNA_RF_POWER_OFFSET));
-}
-
-/*******************************************************************/
-uint32_t UNA_convert_year(int32_t year) {
-    return ((uint32_t) (year - UNA_YEAR_OFFSET));
-}
-
-/*******************************************************************/
-int32_t UNA_get_year(uint32_t una_year) {
-    return ((int32_t) (una_year + UNA_YEAR_OFFSET));
 }
 
 #endif /* UNA_LIB_DISABLE */
