@@ -119,6 +119,27 @@ typedef enum {
 } UNA_register_access_t;
 
 /*!******************************************************************
+ * \enum UNA_register_reset_value_t
+ * \brief UNA register reset value types.
+ *******************************************************************/
+typedef enum {
+    UNA_REGISTER_RESET_VALUE_STATIC = 0,
+    UNA_REGISTER_RESET_VALUE_NVM,
+    UNA_REGISTER_RESET_VALUE_LAST
+} UNA_register_reset_value_t;
+
+/*!******************************************************************
+ * \struct UNA_register_t
+ * \brief UNA register reset value types.
+ *******************************************************************/
+typedef struct {
+    UNA_register_access_t access;
+    uint32_t timeout_ms;
+    UNA_register_reset_value_t reset_value;
+    uint32_t error_value;
+} UNA_register_t;
+
+/*!******************************************************************
  * \enum UNA_reply_type_t
  * \brief Node reply type.
  *******************************************************************/
