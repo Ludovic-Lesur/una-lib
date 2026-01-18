@@ -136,7 +136,7 @@ typedef enum {
 
 /*!******************************************************************
  * \struct UNA_register_t
- * \brief UNA register reset value types.
+ * \brief UNA register structure.
  *******************************************************************/
 typedef struct {
     UNA_register_access_t access;
