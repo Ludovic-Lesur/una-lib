@@ -28,6 +28,7 @@ Here is the versions compatibility table:
 |:---:|:---:|:---:|
 | `UNA_LIB_DISABLE_FLAGS_FILE` | `defined` / `undefined` | Disable the `una_lib_flags.h` header file inclusion when compilation flags are given in the project settings or by command line. |
 | `UNA_LIB_DISABLE` | `defined` / `undefined` | Disable the UNA library. |
+| `UNA_LIB_MASTER` | `defined` / `undefined` | Enable or disable the master mode. |
 | `UNA_LIB_USE_BOARD_NAME` | `defined` / `undefined` | Enable or disable the UNA boards name list. |
 
 # Build
@@ -41,6 +42,7 @@ cmake -DCMAKE_TOOLCHAIN_FILE="<toolchain_file_path>" \
       -DTOOLCHAIN_PATH="<arm-none-eabi-gcc_path>" \
       -DTYPES_PATH="<types_file_path>" \
       -DEMBEDDED_UTILS_PATH="<embedded-utils_path>" \
+      -DUNA_LIB_MASTER=ON \
       -DUNA_LIB_USE_BOARD_NAME=ON \
       -G "Unix Makefiles" ..
 make all

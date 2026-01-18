@@ -31,6 +31,7 @@ if(${BUILD_MODE} STREQUAL STATIC)
     
     # Compilation flags.
     add_compilation_flag(UNA_LIB_DISABLE "Disable the UNA library." OFF)
+    add_compilation_flag(UNA_LIB_MASTER "Enable or disable the master mode." ON)
     add_compilation_flag(UNA_LIB_USE_BOARD_NAME "Enable or disable the UNA boards name list." ON)
     
     # Remove OFF flags from list and keep flags set to value 0.

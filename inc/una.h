@@ -42,6 +42,12 @@
 #define UNA_NODE_ADDRESS_RANGE_RRM          8
 #define UNA_NODE_ADDRESS_RANGE_R4S8CR       15
 
+#ifdef UNA_LIB_MASTER
+#define UNA_GENERATE_REGISTER(access, reset_value, error_value, timeout_ms)     { access, reset_value, error_value, timeout_ms }
+#else
+#define UNA_GENERATE_REGISTER(access, reset_value, error_value, timeout_ms)     { access, reset_value, error_value }
+#endif
+
 /*** UNA structures ***/
 
 /*!******************************************************************
@@ -134,9 +140,11 @@ typedef enum {
  *******************************************************************/
 typedef struct {
     UNA_register_access_t access;
-    uint32_t timeout_ms;
     UNA_register_reset_value_t reset_value;
     uint32_t error_value;
+#ifdef UNA_LIB_MASTER
+    uint32_t timeout_ms;
+#endif
 } UNA_register_t;
 
 /*!******************************************************************
